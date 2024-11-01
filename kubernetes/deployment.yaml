@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embedding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embedding
+  template:
+    metadata:
+      labels:
+        app: embedding
+    spec:
+      containers:
+        - name: embedding
+          image: didw/embedding:latest
+          ports:
+            - containerPort: 5001
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retriever
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retriever
+  template:
+    metadata:
+      labels:
+        app: retriever
+    spec:
+      containers:
+        - name: retriever
+          image: didw/retriever:latest
+          ports:
+            - containerPort: 5002
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: re-ranker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: re-ranker
+  template:
+    metadata:
+      labels:
+        app: re-ranker
+    spec:
+      containers:
+        - name: re-ranker
+          image: didw/re_ranker:latest
+          ports:
+            - containerPort: 5003
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent
+  template:
+    metadata:
+      labels:
+        app: agent
+    spec:
+      containers:
+        - name: agent
+          image: didw/agent:latest
+          ports:
+            - containerPort: 5004
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: didw/api_gateway:latest
+          ports:
+            - containerPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vector-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vector-db
+  template:
+    metadata:
+      labels:
+        app: vector-db
+    spec:
+      containers:
+        - name: vector-db
+          image: didw/vector_db:latest
+          ports:
+            - containerPort: 8000
