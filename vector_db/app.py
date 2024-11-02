@@ -35,5 +35,14 @@ def query():
 
     return jsonify({'results': top_results}), 200
 
+@app.route('/clear', methods=['POST'])
+def clear():
+    vector_store.clear()
+    return jsonify({'status': 'success'}), 200
+
+@app.route('/get_size', methods=['GET'])
+def get_size():
+    return jsonify({'size': len(vector_store)}), 200
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
