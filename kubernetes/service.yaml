@@ -7,9 +7,9 @@ spec:
     app: embedding
   ports:
     - protocol: TCP
-      port: 5001
+      port: 80
       targetPort: 5001
-  type: ClusterIP
+  type: LoadBalancer
 
 ---
 apiVersion: v1
@@ -77,6 +77,6 @@ spec:
     app: vector-db
   ports:
     - protocol: TCP
-      port: 8000
+      port: 80
       targetPort: 8000
-  type: ClusterIP
+  type: LoadBalancer
