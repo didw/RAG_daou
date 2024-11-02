@@ -29,7 +29,7 @@ def generate():
             ],
             # response_format=json,
             model="gpt-4o",
-            temperature=0.5,
+            temperature=0.7,
             seed=2024
         )
         answer = chat_completion.choices[0].message.content

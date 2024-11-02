@@ -3,6 +3,14 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main]
+    paths:
+      - "embedding/**"
+      - "retriever/**"
+      - "re_ranker/**"
+      - "agent/**"
+      - "api_gateway/**"
+      - "vector_db/**"
+      - "kubernetes/**"
 
 jobs:
   build_and_push:
@@ -24,54 +32,42 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./embedding
-          push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/embedding:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/embedding:${{ github.sha }}
 
       - name: Build and push Retriever Module
         uses: docker/build-push-action@v2
         with:
           context: ./retriever
-          push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/retriever:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/retriever:${{ github.sha }}
 
       - name: Build and push Re-ranker Module
         uses: docker/build-push-action@v2
         with:
           context: ./re_ranker
-          push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:${{ github.sha }}
 
       - name: Build and push Agent Module
         uses: docker/build-push-action@v2
         with:
           context: ./agent
-          push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/agent:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/agent:${{ github.sha }}
 
       - name: Build and push API Gateway
         uses: docker/build-push-action@v2
         with:
           context: ./api_gateway
-          push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:${{ github.sha }}
 
       - name: Build and push Vector DB Module
         uses: docker/build-push-action@v2
         with:
           context: ./vector_db
-          push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/vector_db:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/vector_db:${{ github.sha }}
 
       - name: Configure AWS credentials
@@ -87,5 +83,11 @@ jobs:
       - name: Deploy to EKS
         run: |
           kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
-          kubectl rollout restart deployment vector-db
+
+          # SHA 기반 이미지로 업데이트
+          kubectl set image deployment/embedding embedding=${{ secrets.DOCKERHUB_USERNAME }}/embedding:${{ github.sha }}
+          kubectl set image deployment/retriever retriever=${{ secrets.DOCKERHUB_USERNAME }}/retriever:${{ github.sha }}
+          kubectl set image deployment/re-ranker re-ranker=${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:${{ github.sha }}
+          kubectl set image deployment/agent agent=${{ secrets.DOCKERHUB_USERNAME }}/agent:${{ github.sha }}
+          kubectl set image deployment/api-gateway api-gateway=${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:${{ github.sha }}
+          kubectl set image deployment/vector-db vector-db=${{ secrets.DOCKERHUB_USERNAME }}/vector_db:${{ github.sha }}
