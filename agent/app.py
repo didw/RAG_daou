@@ -1,10 +1,10 @@
+import os
 from flask import Flask, request, jsonify
 import openai  # OpenAI API를 사용하는 경우
 
 app = Flask(__name__)
 
-# OpenAI API 키 설정 (환경 변수나 다른 안전한 방법으로 관리 권장)
-openai.api_key = 'YOUR_OPENAI_API_KEY'
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 @app.route('/generate', methods=['POST'])
 def generate():

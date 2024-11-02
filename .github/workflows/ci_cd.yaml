@@ -24,37 +24,49 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./embedding
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/embedding:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/embedding:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/embedding:${{ github.sha }}
 
       - name: Build and push Retriever Module
         uses: docker/build-push-action@v2
         with:
           context: ./retriever
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/retriever:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/retriever:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/retriever:${{ github.sha }}
 
       - name: Build and push Re-ranker Module
         uses: docker/build-push-action@v2
         with:
           context: ./re_ranker
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:${{ github.sha }}
 
       - name: Build and push Agent Module
         uses: docker/build-push-action@v2
         with:
           context: ./agent
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/agent:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/agent:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/agent:${{ github.sha }}
 
       - name: Build and push API Gateway
         uses: docker/build-push-action@v2
         with:
           context: ./api_gateway
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:${{ github.sha }}
 
       - name: Build and push Vector DB Module
         uses: docker/build-push-action@v2
         with:
           context: ./vector_db
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/vector_db:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/vector_db:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/vector_db:${{ github.sha }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
