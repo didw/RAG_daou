@@ -1,10 +1,11 @@
 import os
+import json
 from flask import Flask, request, jsonify
-import openai  # OpenAI API를 사용하는 경우
+from openai import OpenAI
 
 app = Flask(__name__)
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -13,15 +14,26 @@ def generate():
 
     # 답변 생성 로직 (여기서는 OpenAI GPT-3 모델 사용 예시)
     try:
-        response = openai.Completion.create(
-            engine="davinci",
-            prompt=f"Context: {context}\nQuestion: {query}\nAnswer:",
-            max_tokens=150,
-            n=1,
-            stop=None,
-            temperature=0.7,
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps({
+                        "query": query,
+                        "context": context
+                    })
+                }
+            ],
+            # response_format=json,
+            model="gpt-4o",
+            temperature=0.1,
+            seed=2024
         )
-        answer = response.choices[0].text.strip()
+        answer = chat_completion.choices[0].message.content
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
