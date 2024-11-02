@@ -3,15 +3,6 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main]
-    paths:
-      - "embedding/**"
-      - "retriever/**"
-      - "re_ranker/**"
-      - "agent/**"
-      - "api_gateway/**"
-      - "vector_db/**"
-      - "kubernetes/**"
-
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -89,11 +80,12 @@ jobs:
       - name: Deploy to EKS
         run: |
           kubectl apply -f kubernetes/deployment.yaml
+          kubectl apply -f kubernetes/service.yaml
 
-          # SHA 기반 이미지로 업데이트
-          kubectl set image deployment/embedding embedding=${{ secrets.DOCKERHUB_USERNAME }}/embedding:${{ github.sha }}
-          kubectl set image deployment/retriever retriever=${{ secrets.DOCKERHUB_USERNAME }}/retriever:${{ github.sha }}
-          kubectl set image deployment/re-ranker re-ranker=${{ secrets.DOCKERHUB_USERNAME }}/re_ranker:${{ github.sha }}
-          kubectl set image deployment/agent agent=${{ secrets.DOCKERHUB_USERNAME }}/agent:${{ github.sha }}
-          kubectl set image deployment/api-gateway api-gateway=${{ secrets.DOCKERHUB_USERNAME }}/api_gateway:${{ github.sha }}
-          kubectl set image deployment/vector-db vector-db=${{ secrets.DOCKERHUB_USERNAME }}/vector_db:${{ github.sha }}
+      - name: Update EKS
+        run: |
+          kubectl rollout restart deployment/retriever
+          kubectl rollout restart deployment/re-ranker
+          kubectl rollout restart deployment/agent
+          kubectl rollout restart deployment/api-gateway
+          kubectl rollout restart deployment/vector-db
