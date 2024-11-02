@@ -50,9 +50,6 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/agent:latest
-          build-args:
-            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
       - name: Build and push API Gateway
         uses: docker/build-push-action@v2
         with:

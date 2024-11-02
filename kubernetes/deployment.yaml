@@ -80,6 +80,12 @@ spec:
           image: didw/agent:latest
           ports:
             - containerPort: 5004
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-secret
+                  key: OPENAI_API_KEY
 
 ---
 apiVersion: apps/v1
