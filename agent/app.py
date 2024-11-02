@@ -12,7 +12,6 @@ def generate():
     context = request.json.get('context')
     query = request.json.get('query')
 
-    # 답변 생성 로직 (여기서는 OpenAI GPT-3 모델 사용 예시)
     try:
         chat_completion = client.chat.completions.create(
             messages=[
