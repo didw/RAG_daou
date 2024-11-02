@@ -6,6 +6,8 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # 여기서 Secrets로부터 환경 변수 설정
 
     steps:
       - uses: actions/checkout@v2
@@ -50,8 +52,6 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/agent:latest
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Build and push API Gateway
         uses: docker/build-push-action@v2
