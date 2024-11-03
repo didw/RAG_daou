@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # 환경 변수에서 Chroma DB 호스트와 포트 가져오기
 chroma_host = os.getenv("CHROMA_DB_HOST", "localhost")
-chroma_port = int(os.getenv("CHROMA_DB_PORT", 8000))
+chroma_port = int(os.getenv("CHROMA_DB_PORT", 8001))
 
 # Chroma DB 클라이언트 설정 (외부 Chroma DB 컨테이너와 연결)
 client = HttpClient(host=chroma_host, port=chroma_port)
