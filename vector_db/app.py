@@ -1,8 +1,6 @@
 from flask import Flask, request, jsonify
+import chromadb
 from chromadb.config import Settings
-from chromadb import HttpClient
-
-import numpy as np
 import os
 
 app = Flask(__name__)
@@ -11,27 +9,25 @@ app = Flask(__name__)
 chroma_host = os.getenv("CHROMA_DB_HOST", "chroma-db-service")
 chroma_port = int(os.getenv("CHROMA_DB_PORT", 8001))
 
-# Chroma DB 클라이언트 설정 (외부 Chroma DB 컨테이너와 연결)
-client = HttpClient(host=chroma_host, port=chroma_port)
-collection_name = "documents"
+client = chromadb.Client(Settings(
+    chroma_api_impl="rest",
+    chroma_server_host=f"http://{chroma_host}",
+    chroma_server_http_port=chroma_port,
+))
 
-# 컬렉션이 존재하지 않으면 생성
-if collection_name not in [col.name for col in client.list_collections()]:
-    collection = client.create_collection(name=collection_name)
-else:
-    collection = client.get_collection(name=collection_name)
+vector_store = client.get_or_create_collection(name="documents")
 
 @app.route('/add', methods=['POST'])
 def add():
     embedding = request.json.get('embedding')
     document = request.json.get('document')
-    if not embedding or not document:
+    if embedding is None or document is None:
         return jsonify({'error': 'Embedding and document are required'}), 400
 
-    collection.add(
-        embeddings=[embedding],
+    vector_store.add(
         documents=[document],
-        ids=[str(collection.count() + 1)]  # 간단한 ID 생성 방식
+        embeddings=[embedding],
+        ids=[document]
     )
 
     return jsonify({'status': 'success'}), 200
@@ -40,24 +36,30 @@ def add():
 def query():
     query_embedding = request.json.get('embedding')
     top_k = request.json.get('top_k', 5)
-    if not query_embedding:
+    if query_embedding is None:
         return jsonify({'error': 'Embedding is required'}), 400
 
-    results = collection.query(
+    results = vector_store.query(
         query_embeddings=[query_embedding],
         n_results=top_k
     )
 
-    return jsonify({'results': [{'document': doc, 'distance': dist} for doc, dist in zip(results['documents'][0], results['distances'][0])]}), 200
+    # 결과 처리
+    response = []
+    for ids, distances in zip(results['ids'], results['distances']):
+        for id_, distance in zip(ids, distances):
+            response.append({'document': id_, 'score': distance})
+
+    return jsonify({'results': response}), 200
 
 @app.route('/clear', methods=['POST'])
 def clear():
-    collection.delete(where={})
+    vector_store.delete()
     return jsonify({'status': 'success'}), 200
 
 @app.route('/get_size', methods=['GET'])
 def get_size():
-    size = collection.count()
+    size = vector_store.count()
     return jsonify({'size': size}), 200
 
 if __name__ == '__main__':
