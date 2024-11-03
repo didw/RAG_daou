@@ -1,5 +1,4 @@
 flask
 openai
 requests
-autogen
 flaml[autogen]
