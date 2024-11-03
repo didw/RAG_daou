@@ -5,14 +5,14 @@ import os
 
 app = Flask(__name__)
 
-# 환경 변수에서 Chroma DB 호스트와 포트 가져오기
+# ChromaDB 서버의 서비스 주소와 포트를 환경 변수에서 가져오기
 chroma_host = os.getenv("CHROMA_DB_HOST", "chroma-db-service")
 chroma_port = int(os.getenv("CHROMA_DB_PORT", 8001))
 
+# 클라이언트 설정
 client = chromadb.Client(Settings(
-    chroma_api_impl="rest",
-    chroma_server_host=f"http://{chroma_host}",
-    chroma_server_http_port=chroma_port,
+    chroma_server_host=chroma_host,
+    chroma_server_grpc_port=chroma_port,
 ))
 
 vector_store = client.get_or_create_collection(name="documents")
