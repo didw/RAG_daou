@@ -1,5 +1,5 @@
 # Python 3.9 Slim 베이스 이미지 사용
-FROM python:3.9-slim
+FROM pytorch/pytorch:2.5.1-cuda12.1-cudnn9-runtime
 
 # 작업 디렉토리 설정
 WORKDIR /app

@@ -1,0 +1,19 @@
+version: '3'
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    ports:
+      - "8001:8001"
+  
+  app:
+    build:
+      context: .
+    container_name: flask_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - chromadb
+    environment:
+      CHROMA_DB_HOST: "chromadb"
+      CHROMA_DB_PORT: "8001"

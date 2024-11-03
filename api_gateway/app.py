@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # 각 모듈의 서비스 URL 설정 (환경 변수로 관리 권장)
-EMBEDDING_URL = os.getenv('EMBEDDING_URL', 'http://embedding-service:5001/embed')
+EMBEDDING_URL = os.getenv('EMBEDDING_URL', 'http://embedding-service:80/embed')
 RETRIEVER_URL = os.getenv('RETRIEVER_URL', 'http://retriever-service:5002/retrieve')
 RE_RANKER_URL = os.getenv('RE_RANKER_URL', 'http://re-ranker-service:5003/rerank')
 AGENT_URL = os.getenv('AGENT_URL', 'http://agent-service:5004/generate')

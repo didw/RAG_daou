@@ -127,3 +127,28 @@ spec:
           image: didw/vector_db:latest
           ports:
             - containerPort: 8000
+          env:
+            - name: CHROMA_DB_HOST
+              value: "chroma-db-service" # Chroma DB 서비스 이름과 일치해야 함
+            - name: CHROMA_DB_PORT
+              value: "8001"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chroma-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chroma-db
+  template:
+    metadata:
+      labels:
+        app: chroma-db
+    spec:
+      containers:
+        - name: chroma-db
+          image: chromadb/chroma:latest
+          ports:
+            - containerPort: 8001

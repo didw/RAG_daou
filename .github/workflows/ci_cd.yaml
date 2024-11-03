@@ -88,3 +88,4 @@ jobs:
           kubectl rollout restart deployment/agent
           kubectl rollout restart deployment/api-gateway
           kubectl rollout restart deployment/vector-db
+          kubectl rollout restart deployment/embedding

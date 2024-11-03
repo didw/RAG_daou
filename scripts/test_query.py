@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # LoadBalancer의 외부 URL로 설정하며 포트를 명시하지 않음 (기본 포트 80 사용)
-QUERY_URL = os.getenv('QUERY_URL', 'http://k8s-default-apigatew-45e7ef45cb-99738a6940e58157.elb.ap-northeast-2.amazonaws.com/query')
+QUERY_URL = os.getenv('QUERY_URL', 'http://k8s-default-apigatew-b334012b26-af978099376a3e4b.elb.ap-northeast-2.amazonaws.com/query')
 
 def query(text):
     response = requests.post(QUERY_URL, json={'text': text})

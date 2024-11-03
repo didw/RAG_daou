@@ -6,7 +6,7 @@ import numpy as np
 app = Flask(__name__)
 
 # 모델 및 토크나이저 로드
-MODEL_NAME = 'bge-small-ko'  # BGE-m3-ko 모델 이름
+MODEL_NAME = 'COCO0414/DNF-bge-m3'
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)
 

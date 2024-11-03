@@ -1,10 +1,19 @@
 from flask import Flask, request, jsonify
+from chromadb import Chroma
+from chromadb.api.types import Document, Embedding
+from chromadb.api import ChromaClient
 import numpy as np
+import os
 
 app = Flask(__name__)
 
-# 간단한 인메모리 벡터 저장소
-vector_store = []
+# 환경 변수에서 Chroma DB 호스트와 포트 가져오기
+chroma_host = os.getenv("CHROMA_DB_HOST", "localhost")
+chroma_port = int(os.getenv("CHROMA_DB_PORT", 8001))
+
+# Chroma DB 클라이언트 설정 (외부 Chroma DB 컨테이너와 연결)
+client = ChromaClient(f"http://{chroma_host}:{chroma_port}")
+vector_store = client.create_collection("documents")
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -13,7 +22,8 @@ def add():
     if not embedding or not document:
         return jsonify({'error': 'Embedding and document are required'}), 400
 
-    vector_store.append({'embedding': np.array(embedding), 'document': document})
+    vector_store.add_documents([Document(id=document, embedding=Embedding(np.array(embedding)))])
+
     return jsonify({'status': 'success'}), 200
 
 @app.route('/query', methods=['POST'])
@@ -24,16 +34,9 @@ def query():
         return jsonify({'error': 'Embedding is required'}), 400
 
     query_vector = np.array(query_embedding)
-    similarities = []
-    for item in vector_store:
-        score = np.dot(query_vector, item['embedding'])
-        similarities.append({'document': item['document'], 'score': score})
+    results = vector_store.query(query_vector, top_k)
 
-    # 유사도에 따라 정렬
-    similarities.sort(key=lambda x: x['score'], reverse=True)
-    top_results = similarities[:top_k]
-
-    return jsonify({'results': top_results}), 200
+    return jsonify({'results': [{'document': result['id'], 'score': result['score']} for result in results]}), 200
 
 @app.route('/clear', methods=['POST'])
 def clear():
@@ -42,7 +45,8 @@ def clear():
 
 @app.route('/get_size', methods=['GET'])
 def get_size():
-    return jsonify({'size': len(vector_store)}), 200
+    size = vector_store.count_documents()
+    return jsonify({'size': size}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

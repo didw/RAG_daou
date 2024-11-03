@@ -3,9 +3,9 @@ import os
 import pandas as pd
 
 # LoadBalancer의 외부 URL로 설정하며 포트를 명시하지 않음 (기본 포트 80 사용)
-EMBEDDING_URL = os.getenv('EMBEDDING_URL', 'http://aa32403e4f5574a3e9c3e40141b0f950-1325651741.ap-northeast-2.elb.amazonaws.com/embed')
-VECTOR_DB_ADD_URL = os.getenv('VECTOR_DB_ADD_URL', 'http://aa35bd1af545b4dceb7f9dc7487917e9-615029480.ap-northeast-2.elb.amazonaws.com/add')
-VECTOR_DB_GETSIZE_URL = os.getenv('VECTOR_DB_GETSIZE_URL', 'http://aa35bd1af545b4dceb7f9dc7487917e9-615029480.ap-northeast-2.elb.amazonaws.com/get_size')
+EMBEDDING_URL = os.getenv('EMBEDDING_URL', 'http://k8s-default-embeddin-cc9b0ac820-23064656d93484df.elb.ap-northeast-2.amazonaws.com/embed')
+VECTOR_DB_ADD_URL = os.getenv('VECTOR_DB_ADD_URL', 'http://k8s-default-vectordb-2fae640b3a-8e5c7e60f829ac6c.elb.ap-northeast-2.amazonaws.com/add')
+VECTOR_DB_GETSIZE_URL = os.getenv('VECTOR_DB_GETSIZE_URL', 'http://k8s-default-vectordb-2fae640b3a-8e5c7e60f829ac6c.elb.ap-northeast-2.amazonaws.com/get_size')
 
 def embed_and_store(document):
     # 임베딩 모듈에 요청하여 임베딩 생성

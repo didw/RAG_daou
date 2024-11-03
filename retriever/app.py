@@ -5,7 +5,7 @@ import requests
 
 app = Flask(__name__)
 
-VECTOR_DB_URL = os.getenv('VECTOR_DB_URL', 'http://vector-db-service:8000/query')
+VECTOR_DB_URL = os.getenv('VECTOR_DB_URL', 'http://vector-db-service:80/query')
 
 
 @app.route('/retrieve', methods=['POST'])
