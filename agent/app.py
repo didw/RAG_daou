@@ -31,7 +31,7 @@ user_proxy = UserProxyAgent(
 @app.route('/generate', methods=['POST'])
 def generate():
     context = request.json.get('context')
-    user_interest = request.json.get('user_interest')
+    query = request.json.get('query')
 
     try:
         # Analyze trends
@@ -44,7 +44,7 @@ def generate():
         # Recommend places
         user_proxy.initiate_chat(
             tourist_agent,
-            message=f"Recommend tourist attractions based on these trends: {trend_summary}. User interest: {user_interest}"
+            message=f"Recommend tourist attractions based on these trends: {trend_summary}. query: {query}"
         )
         place_recommendations = user_proxy.last_message()["content"]
 
