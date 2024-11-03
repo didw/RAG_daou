@@ -1,4 +1,4 @@
 flask
-openai
 requests
-flaml[autogen]
+openai==1.52.2
+flaml[autogen]==2.3.2
