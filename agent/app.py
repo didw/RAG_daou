@@ -2,7 +2,7 @@ import os
 import json
 from flask import Flask, request, jsonify
 from openai import OpenAI
-from autogen import MultiAgent
+from flaml.autogen import MultiAgent  # 수정된 부분
 
 app = Flask(__name__)
 
@@ -25,7 +25,7 @@ class TrendAgent:
                 {"role": "system", "content": "You are a trend analysis expert focused on fashion, beauty, and food trends."},
                 {"role": "user", "content": f"Analyze the following news data for trending topics: {context}"}
             ],
-            model="gpt-4",
+            model="gpt-4o",
             temperature=0.5
         )
         trend_summary = response.choices[0].message.content
@@ -43,7 +43,7 @@ class TouristAgent:
                 {"role": "system", "content": "You are an expert in recommending travel destinations based on user interests and trends."},
                 {"role": "user", "content": f"Recommend tourist attractions based on these trends: {trends}. User interest: {user_interest}"}
             ],
-            model="gpt-4",
+            model="gpt-4o",
             temperature=0.5
         )
         place_recommendations = response.choices[0].message.content
