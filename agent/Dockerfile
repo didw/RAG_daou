@@ -4,6 +4,8 @@ FROM python:3.9-slim
 # 작업 디렉토리 설정
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y libgomp1
+
 # 필요한 라이브러리 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
