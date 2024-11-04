@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
 import os
-from openai import OpenAI
 
 app = Flask(__name__)
 
@@ -10,9 +9,7 @@ EMBEDDING_URL = os.getenv('EMBEDDING_URL', 'http://embedding-service:80/embed')
 RETRIEVER_URL = os.getenv('RETRIEVER_URL', 'http://retriever-service:5002/retrieve')
 RE_RANKER_URL = os.getenv('RE_RANKER_URL', 'http://re-ranker-service:5003/rerank')
 AGENT_URL = os.getenv('AGENT_URL', 'http://agent-service:5004')
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-client = OpenAI(api_key=OPENAI_API_KEY)
 MAX_RETRY = 5  # 최대 재시도 횟수
 
 @app.route('/query', methods=['POST'])
