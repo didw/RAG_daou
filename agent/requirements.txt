@@ -1,4 +1,4 @@
 flask
 requests
 openai==1.52.2
-autogen-agentchat~=0.2
+
