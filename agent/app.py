@@ -28,6 +28,7 @@ def classify():
             temperature=0.3
         )
         classification = response.choices[0].message.content.strip()
+        print(f"Classification: {classification}")
         if "트렌드 분석" in classification:
             classification = "trend_analysis"
         elif "관광지 검색" in classification:
@@ -54,6 +55,7 @@ def evaluate():
             temperature=0.1
         )
         evaluation_result = response.choices[0].message.content.strip().lower()
+        print(f"Evaluation result: {evaluation_result}")
         is_appropriate = "네" in evaluation_result
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -74,6 +76,7 @@ def rewrite():
             temperature=0.5
         )
         rewritten_query = response.choices[0].message.content.strip()
+        print(f"Rewritten query: {rewritten_query}")
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -99,6 +102,7 @@ def generate():
             seed=2024
         )
         answer = chat_completion.choices[0].message.content
+        print(f"Answer: {answer}")
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

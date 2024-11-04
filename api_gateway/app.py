@@ -20,7 +20,7 @@ def query():
     # 1. 사용자 입력 분류 (Agent에게 요청)
     request_type = classify_request(user_input)
     if request_type == "fallback":
-        agent_response = requests.post(f"{AGENT_URL}/generate", json={'context': "", 'query': query, 'type': request_type})
+        agent_response = requests.post(f"{AGENT_URL}/generate", json={'context': "", 'query': user_input, 'type': request_type})
         return jsonify({'answer': agent_response}), 200
 
     for retry_count in range(MAX_RETRY):
