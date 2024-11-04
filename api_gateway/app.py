@@ -43,19 +43,19 @@ def query():
         top_document = rerank_response.json().get('top_document')
 
         # 5. 에이전트를 통해 답변 생성
-        agent_response = requests.post(f"{AGENT_URL}/generate", json={'context': top_document, 'query': query, 'type': request_type})
+        agent_response = requests.post(f"{AGENT_URL}/generate", json={'context': top_document, 'query': user_input, 'type': request_type})
         if agent_response.status_code != 200:
             return jsonify({'error': 'Agent module error'}), 500
         answer = agent_response.json().get('response')
 
         # 6. 적절성 평가
-        if is_answer_appropriate(query, answer):
+        if is_answer_appropriate(user_input, answer):
             return jsonify({'answer': answer})
 
         # 7. Query Rewrite
-        query = rewrite_query(query)
+        user_input = rewrite_query(user_input)
         retry_count += 1
-        print(f"Retrying with modified query: {query} (Attempt {retry_count})")
+        print(f"Retrying with modified query: {user_input} (Attempt {retry_count})")
         if retry_count >= MAX_RETRY:
             return jsonify({'answer': answer})
 
@@ -79,12 +79,12 @@ def is_answer_appropriate(user_input, answer):
         return False
     return response.json().get('is_appropriate', False)
 
-def rewrite_query(query):
+def rewrite_query(user_input):
     # Agent에 쿼리 수정 요청
-    response = requests.post(f"{AGENT_URL}/rewrite", json={'query': query})
+    response = requests.post(f"{AGENT_URL}/rewrite", json={'query': user_input})
     if response.status_code != 200:
-        return query
-    return response.json().get('rewritten_query', query)
+        return user_input
+    return response.json().get('rewritten_query', user_input)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

@@ -24,7 +24,7 @@ def classify():
                 {"role": "system", "content": "당신은 사용자 요청이 '트렌드 분석', '관광지 검색', 또는 그 외 (fallback) 중 무엇에 해당하는지 분류하는 분류 전문가입니다. 주어진 사용자 요청을 분석하여 해당하는 요청 유형을 정확하게 분류하세요. 분류 결과를 '트렌드 분석', '관광지 검색', 또는 'fallback' 중 하나로 선택해주세요."},
                 {"role": "user", "content": f"사용자 입력: {text}"}
             ],
-            model="gpt-4o",
+            model="gpt-4o-mini",
             temperature=0.3
         )
         classification = response.choices[0].message.content.strip()
@@ -51,7 +51,7 @@ def evaluate():
                 {"role": "system", "content": "당신은 답변의 적절성을 평가하는 평가자입니다. 주어진 답변이 사용자 입력에 대해 적절한지 또는 수정이 필요한지를 평가하세요. 적절하다면 '네'를, 그렇지 않다면 '아니오' 라고 답변해주세요."},
                 {"role": "user", "content": f"사용자 입력: {user_input}, 답변: {answer}"}
             ],
-            model="gpt-4o",
+            model="gpt-4o-mini",
             temperature=0.1
         )
         evaluation_result = response.choices[0].message.content.strip().lower()
@@ -72,7 +72,7 @@ def rewrite():
                 {"role": "system", "content": "당신은 사용자 쿼리를 더 명확하고 완전하게 하기 위해 다듬는 쿼리 재작성 전문가입니다. 주어진 쿼리를 다시 작성하여 이해와 검색 효과를 높이세요."},
                 {"role": "user", "content": f"다음 사용자 입력을 관광지 검색, 혹은 패션 트렌드 분석 등에 맞게 재작성해주세요: {query}"}
             ],
-            model="gpt-4o",
+            model="gpt-4o-mini",
             temperature=0.5
         )
         rewritten_query = response.choices[0].message.content.strip()
@@ -97,7 +97,7 @@ def generate():
                 {"role": "system", "content": instructions},
                 {"role": "user", "content": json.dumps({"사용자 입력": query, "관련 문서": context})}
             ],
-            model="gpt-4o",
+            model="gpt-4o-mini",
             temperature=0.5,
             seed=2024
         )
