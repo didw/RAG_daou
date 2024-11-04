@@ -39,14 +39,22 @@ def generate():
             trend_agent,
             message=f"Analyze the following news data for trending topics: {context}"
         )
-        trend_summary = user_proxy.last_message()["content"]
+        trend_summary_response = user_proxy.last_message()
+        if not trend_summary_response or "content" not in trend_summary_response:
+            raise ValueError("TrendAgent did not return a valid response")
+        trend_summary = trend_summary_response["content"]
+        print(f"Trend Summary: {trend_summary}")
 
         # Recommend places
         user_proxy.initiate_chat(
             tourist_agent,
             message=f"Recommend tourist attractions based on these trends: {trend_summary}. query: {query}"
         )
-        place_recommendations = user_proxy.last_message()["content"]
+        place_recommendations_response = user_proxy.last_message()
+        if not place_recommendations_response or "content" not in place_recommendations_response:
+            raise ValueError("TouristAgent did not return a valid response")
+        place_recommendations = place_recommendations_response["content"]
+        print(f"Place Recommendations: {place_recommendations}")
 
         # Combine results
         answer = {
@@ -54,6 +62,7 @@ def generate():
             "place_recommendations": place_recommendations
         }
     except Exception as e:
+        print(f"Error in agent processing: {e}")
         return jsonify({'error': str(e)}), 500
 
     return jsonify({'response': answer})

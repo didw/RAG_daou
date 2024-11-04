@@ -129,7 +129,7 @@ spec:
             - containerPort: 8000
           env:
             - name: CHROMA_DB_HOST
-              value: "chroma-db-service" # Chroma DB 서비스 이름과 일치해야 함
+              value: "chroma-db-service"
             - name: CHROMA_DB_PORT
               value: "8001"
 ---
@@ -152,3 +152,22 @@ spec:
           image: chromadb/chroma:latest
           ports:
             - containerPort: 8001
+          volumeMounts:
+            - mountPath: /data
+              name: chroma-db-storage
+      volumes:
+        - name: chroma-db-storage
+          persistentVolumeClaim:
+            claimName: chroma-db-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: chroma-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp2
+  resources:
+    requests:
+      storage: 2Gi
