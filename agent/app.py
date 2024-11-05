@@ -1,12 +1,19 @@
 import os
 import json
+import logging
+import traceback
 from flask import Flask, request, jsonify
 from openai import OpenAI
+
+# 기본 로거 설정
+logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-def generate_instructions(request_type):
+def generate_instructions(request_type: str) -> str:
     if request_type == "trend_analysis":
         return "당신은 패션, 뷰티, 음식 분야의 트렌드 분석에 전문성을 갖춘 전문가입니다. 주어진 문맥을 기반으로 주요 트렌드를 요약하여 제공하세요."
     elif request_type == "tourist_search":
@@ -28,7 +35,7 @@ def classify():
             temperature=0.3
         )
         classification = response.choices[0].message.content.strip()
-        print(f"Classification: {classification}")
+        logger.debug(f"Classification: {classification}")
         if "트렌드 분석" in classification:
             classification = "trend_analysis"
         elif "관광지 검색" in classification:
@@ -36,6 +43,7 @@ def classify():
         else:
             classification = "fallback"
     except Exception as e:
+        logger.error(f"Classification Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
     return jsonify({'classification': classification})
@@ -55,9 +63,10 @@ def evaluate():
             temperature=0.1
         )
         evaluation_result = response.choices[0].message.content.strip().lower()
-        print(f"Evaluation result: {evaluation_result}")
+        logger.debug(f"Evaluation result: {evaluation_result}")
         is_appropriate = "네" in evaluation_result
     except Exception as e:
+        logger.error(f"Evaluation Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
     return jsonify({'is_appropriate': is_appropriate})
@@ -76,8 +85,10 @@ def rewrite():
             temperature=0.5
         )
         rewritten_query = response.choices[0].message.content.strip()
-        print(f"Rewritten query: {rewritten_query}")
+        logger.debug(f"Rewritten query: {rewritten_query}")
     except Exception as e:
+        logger.error(f"Rewrite Error: {str(e)}")
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
     return jsonify({'rewritten_query': rewritten_query})
@@ -102,11 +113,36 @@ def generate():
             seed=2024
         )
         answer = chat_completion.choices[0].message.content
-        print(f"Answer: {answer}")
+        logger.debug(f"Answer: {answer}")
     except Exception as e:
+        logger.error(f"Generate Error: {str(e)}")
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
     return jsonify({'response': answer})
 
+# 5. 사용자 입력과 비교해 관련성이 높은 문서 추출 엔드포인트
+@app.route('/rank_documents', methods=['POST'])
+def rank_documents():
+    documents = request.json.get('documents')
+    query = request.json.get('query')
+
+    try:
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "사용자가 제공한 쿼리에 따라 가장 적합한 문서를 선택하는 전문가입니다. 주어진 문서 중 관련성이 높은 문서 2개를 선택해주세요."},
+                {"role": "user", "content": f"쿼리: {query}\n문서들: {documents}"}
+            ],
+            model="gpt-4o-mini",
+            temperature=0.2
+        )
+        top_document = response.choices[0].message.content.strip()
+        logger.debug(f"Top document: {top_document}")
+    except Exception as e:
+        logger.error(f"Rank Documents Error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'top_document': top_document})
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004)
+    app.run(host='0.0.0.0', port=5004, debug=True)

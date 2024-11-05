@@ -6,7 +6,7 @@ import numpy as np
 app = Flask(__name__)
 
 # 모델 및 토크나이저 로드
-MODEL_NAME = 'COCO0414/DNF-bge-m3'
+MODEL_NAME = 'dragonkue/BGE-m3-ko'
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)
 
@@ -14,7 +14,8 @@ model = AutoModel.from_pretrained(MODEL_NAME)
 WINDOW_SIZE = 200
 OVERLAP = 100
 
-def chunk_text(text, window_size, overlap):
+def chunk_text(text:str, window_size:int, overlap:int) -> list:
+    # 텍스트를 토큰화
     tokens = tokenizer.encode(text, add_special_tokens=False)
     chunks = []
     for i in range(0, len(tokens), window_size - overlap):
@@ -24,7 +25,7 @@ def chunk_text(text, window_size, overlap):
             break
     return chunks
 
-def get_embedding(text):
+def get_embedding(text:str) -> list:
     # 텍스트를 청킹
     chunks = chunk_text(text, WINDOW_SIZE, OVERLAP)
     embeddings = []

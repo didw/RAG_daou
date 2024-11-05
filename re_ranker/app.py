@@ -1,9 +1,16 @@
 from flask import Flask, request, jsonify
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+import os
+import requests
+import logging
 
 app = Flask(__name__)
+AGENT_URL = os.getenv('AGENT_URL', 'http://agent-service:5004')
 
+# 기본 로거 설정
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# 검색된 문서에 대해 관련성 높은 문서 추출
 @app.route('/rerank', methods=['POST'])
 def rerank():
     documents = request.json.get('documents')
@@ -12,11 +19,15 @@ def rerank():
     if not documents:
         return jsonify({'error': 'No documents to re-rank'}), 400
 
-    # 간단한 Re-ranking 로직 (여기서는 임의로 점수를 부여)
-    # 실제로는 임베딩 등을 활용하여 유사도를 계산
-    scores = np.random.rand(len(documents))
-    ranked_docs = sorted(zip(documents, scores), key=lambda x: x[1], reverse=True)
-    top_document = ranked_docs[0][0]
+    # LLM을 이용하여 관련성 높은 문서를 추출
+    try:
+        response = requests.post(f"{AGENT_URL}/rank_documents", json={'query': query, 'documents': documents})
+        response_data = response.json()  # JSON 데이터를 추출
+        top_document = response_data.get('top_document')
+        logger.debug(f"Top document: {top_document}")
+    except Exception as e:
+        logger.error(f"Rerank Error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
     return jsonify({'top_document': top_document})
 

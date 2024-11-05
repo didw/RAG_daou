@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 VECTOR_DB_URL = os.getenv('VECTOR_DB_URL', 'http://vector-db-service:80/query')
 
-
+# embedding에 대한 document 검색
 @app.route('/retrieve', methods=['POST'])
 def retrieve():
     embedding = request.json.get('embedding')

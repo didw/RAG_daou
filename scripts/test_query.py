@@ -21,6 +21,9 @@ def main():
         "최근 넷플릭스 화제작 ‘흑백요리사’가 트렌드에 어떤 영향을 미쳤는지 알려주세요.",
         "가을 꽃을 만끽할 수 있는 관광지는 어디가 좋을 지 추천해주세요."
     ]
+    queries = [
+        "오늘 날씨 어때?"
+    ]
     for query in queries:
         print(f"Query: {query}")
         answer = send_query(query)

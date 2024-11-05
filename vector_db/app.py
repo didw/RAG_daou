@@ -17,6 +17,7 @@ client = chromadb.Client(Settings(
 
 vector_store = client.get_or_create_collection(name="documents")
 
+# embedding, document 추가 서비스 엔드포인트
 @app.route('/add', methods=['POST'])
 def add():
     embedding = request.json.get('embedding')
@@ -32,10 +33,11 @@ def add():
 
     return jsonify({'status': 'success'}), 200
 
+# embedding을 이용한 검색 서비스 엔드포인트
 @app.route('/query', methods=['POST'])
 def query():
     query_embedding = request.json.get('embedding')
-    top_k = request.json.get('top_k', 5)
+    top_k = request.json.get('top_k', 10)
     if query_embedding is None:
         return jsonify({'error': 'Embedding is required'}), 400
 
@@ -52,11 +54,13 @@ def query():
 
     return jsonify({'results': response}), 200
 
+# 모든 데이터 삭제 서비스 엔드포인트
 @app.route('/clear', methods=['POST'])
 def clear():
-    vector_store.delete()
+    vector_store.clear()
     return jsonify({'status': 'success'}), 200
 
+# 데이터베이스 크기 확인 서비스 엔드포인트
 @app.route('/get_size', methods=['GET'])
 def get_size():
     size = vector_store.count()
